@@ -2,8 +2,8 @@ import VueCompositionAPI, { nextTick, reactive, toRefs } from '@vue/composition-
 import Vue from 'vue'
 import { getParentItemNode, getEditorEl } from './utils'
 import useNodes from './node'
-import useRange from './range'
-// import { EDITOR_CLASS } from './constants'
+import useRange, { getCurrentRange } from './range'
+import useCursor from './cursor'
 Vue.use(VueCompositionAPI)
 
 const state = reactive({
@@ -12,13 +12,9 @@ const state = reactive({
   currentHoverElItemId: ''
 })
 
-const {
-  nodes,
-  addNode,
-  setCurrentNodeById
-} = useNodes()
-
+const { nodes, addNode, setCurrentNodeById } = useNodes()
 const { setRangeState, currentRange } = useRange()
+const { setCursorPosition } = useCursor()
 
 function setMouseState (obj) {
   Object.keys(obj).forEach(k => {
@@ -33,12 +29,7 @@ async function handleMousedown (e) {
     await nextTick()
   }
   const editorEl = getEditorEl()
-  // mouseInfo.startX = e.pageX
-  // mouseInfo.startY = e.pageY
-  setMouseState({
-    startX: e.pageX,
-    startY: e.pageY
-  })
+  setMouseState({ startX: e.pageX, startY: e.pageY })
   let itemEl = getParentItemNode(e.target)
   if (!itemEl) {
     itemEl = document.elementFromPoint(e.pageX, e.pageY)
@@ -52,6 +43,12 @@ async function handleMousedown (e) {
   if (itemEl && itemEl.id) {
     console.log('设置当前节点', itemEl.id)
     setCurrentNodeById(itemEl.id)
+    setTimeout(() => {
+      const curRange = getCurrentRange()
+      if (curRange) {
+        setCursorPosition(curRange.startOffset, curRange.startPiece)
+      }
+    })
   } else {
     console.warn('鼠标点击的位置，不是一个节点')
   }

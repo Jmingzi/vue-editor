@@ -1,6 +1,7 @@
 import VueCompositionAPI, { reactive, toRefs } from '@vue/composition-api'
 import Vue from 'vue'
-import { state as nodeState } from './node'
+// import { state as nodeState } from './node'
+import { setCursorPosition } from './cursor'
 Vue.use(VueCompositionAPI)
 
 const state = reactive({
@@ -30,14 +31,19 @@ export function setRangeState (range, nodeId, startX, endX, startPiece, endPiece
 export default function useRange () {
   return {
     ...toRefs(state),
-    setRangeState
+    setRangeState,
+    getCurrentRange
   }
 }
 
 export function getCurrentRange () {
   const selection = window.getSelection()
+  if (!selection.rangeCount) {
+    console.warn('range.getCurrentRange 当前 selection 没有选区')
+    return
+  }
   const range = selection.getRangeAt(0)
-  const { endContainer, startContainer, startOffset, endOffset } = range
+  const { endContainer, startContainer, startOffset, endOffset, collapsed } = range
   // console.log(startOffset, endOffset, range)
   let startPiece = startContainer.parentNode.dataset.piece
   let endPiece = endContainer.parentNode.dataset.piece
@@ -47,21 +53,20 @@ export function getCurrentRange () {
   if (endPiece) {
     endPiece = Number(endPiece)
   }
-
-  const setCursor = (offset, piece = 0) => {
-    const itemEl = document.getElementById(nodeState.currentNode.id)
-    const textEl = itemEl.childNodes[piece].childNodes[0]
-    range.setStart(textEl, offset)
-    range.setEnd(textEl, offset)
-  }
+  // const setCursor = (offset, piece = 0) => {
+  //   const itemEl = document.getElementById(nodeState.currentNode.id)
+  //   const textEl = itemEl.childNodes[piece].childNodes[0]
+  //   range.setStart(textEl, offset)
+  //   range.setEnd(textEl, offset)
+  // }
   return {
-    // ...range,
+    collapsed,
     startOffset,
     endOffset,
     startContainer,
     endContainer,
     startPiece,
     endPiece,
-    setCursor
+    setCursor: (...args) => setCursorPosition.apply(null, args.concat(args.length === 1 ? [undefined, range] : range))
   }
 }

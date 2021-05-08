@@ -1,7 +1,8 @@
 <template>
   <div class="console">
-    <p>currentNode: </p>
-    <pre style="font-size: 12px;background: #f2f2f2;padding: 10px">{{ str(currentNode) }}</pre>
+    <p>cursor: id {{ id }} / piece {{ piece }} / startOffset {{ startOffset }}</p>
+    <p v-if="false">currentNode: </p>
+    <pre v-if="false" style="font-size: 12px;background: #f2f2f2;padding: 10px">{{ str(currentNode) }}</pre>
     <p>nodes:</p>
     <pre
       v-for="(item, i) in nodes"
@@ -17,13 +18,18 @@
 
 <script>
 import useNodes from '@/assets/node'
+import useCursor from '@/assets/cursor'
 
 export default {
   setup () {
     const { nodes, currentNode } = useNodes()
+    const { piece, startOffset, id } = useCursor()
     return {
       nodes,
       currentNode,
+      piece,
+      startOffset,
+      id,
       str (obj) {
         return JSON.stringify(obj, null, 2)
       }

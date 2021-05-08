@@ -4,19 +4,18 @@ import useNodes from './node'
 import { getParentItemNode, isCharactor, isInputKey, getEditorEl } from './utils'
 import useZh from './zh'
 import useMouse from './mouse'
+// import useCursor from './cursor'
 import { getCurrentRange, setRangeState } from './range'
 import { isPlaceholder } from './node-placeholder'
 import { isParagraph, handleKeyEnter, getDefaultParagraph, deleteNodeByRange, mergeParagraphNode } from './node-paragraph'
 
 Vue.use(VueCompositionAPI)
 
-const state = reactive({
-})
-
+const state = reactive({})
 const { nodes, addNode, currentNode, updateNode, updateNodeContent, setCurrentNodeById, deleteNodeById } = useNodes()
-
 const { isOpenZh } = useZh()
 const { setMouseState } = useMouse()
+// const { setCursorPosition } = useCursor()
 
 export default function useKey () {
   return {
@@ -101,9 +100,10 @@ async function handleKeyDown (e) {
     // 通过箭头控制光标上下
     // 改变当前节点
     setTimeout(() => {
-      const { startContainer } = getCurrentRange()
+      const { startContainer, startOffset, startPiece, setCursor } = getCurrentRange()
       const parent = getParentItemNode(startContainer)
       setCurrentNodeById(parent.id)
+      setCursor(startOffset, startPiece)
     })
   } else if (isDelete) {
     // todo 选中再删除一段字符

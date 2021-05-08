@@ -1,24 +1,9 @@
 # vue-editor
 
-## Project setup
-```
-yarn install
-```
+### 背景
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+### 调研
 
-### Compiles and minifies for production
-```
-yarn build
-```
+### 实现
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 规划
