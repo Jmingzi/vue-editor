@@ -2,6 +2,7 @@
   <div
     v-if="show"
     class="basic-tools"
+    ref="self"
     :style="{
       left: position.left + 'px',
       top: position.top + 'px'
@@ -16,19 +17,27 @@
       }"
       @click="item.action()"
     >
-      <span>{{ item.label }}</span>
+      <c-svg :type="item.icon" />
     </div>
   </div>
 </template>
 
 <script>
-import { ref, watchEffect, reactive, nextTick } from '@vue/composition-api'
+import { ref, watchEffect, reactive, nextTick, onMounted } from '@vue/composition-api'
 import useRange from '@/assets/range'
 import useNodes from '@/assets/node'
+import CSvg from '../svg'
 
 export default {
-  setup () {
+  components: {
+    CSvg
+  },
+
+  setup (props, ctx) {
     const show = ref(false)
+    const state = reactive({
+      rect: null
+    })
     const position = reactive({
       top: -1000,
       left: -1000
@@ -177,10 +186,17 @@ export default {
     const tools = [
       {
         label: '颜色',
+        icon: 'color',
+        action: () => {}
+      },
+      {
+        label: '',
+        icon: 'bold',
         action: () => {}
       },
       {
         label: '划线',
+        icon: 'line-through',
         field: 'lineThrough',
         action () {
           commonAction(
@@ -202,12 +218,16 @@ export default {
 
     watchEffect(() => {
       show.value = !!currentRange.value
-      if (currentRange.value) {
+      if (currentRange.value && state.rect) {
         // 根据 span 的宽度和选中文本的位置确定位置
         const { offsetTop, offsetHeight } = document.getElementById(nodeId.value)
         position.top = offsetTop + offsetHeight + 10
-        position.left = (rangeDir.value === 'leftRight' ? startX.value : endX.value) + rangeWidth.value / 2 - 100
+        position.left = (rangeDir.value === 'leftRight' ? startX.value : endX.value) + rangeWidth.value / 2 - (state.rect.width / 2)
       }
+    })
+
+    onMounted(() => {
+      state.rect = ctx.refs.self.getBoundingClientRect()
     })
 
     return {
@@ -225,16 +245,27 @@ export default {
 .basic-tools {
   display: flex;
   position: fixed;
-  width: 200px;
+  // width: 200px;
   height: 40px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .3);
   background: #fff;
+  border-radius: 6px;
+  padding: 0 10px;
   &__item {
-    width: 50px;
-    text-align: center;
-    border-right: 1px #ccc solid;
+    display: flex;
+    // width: 40px;
+    justify-content: center;
+    align-items: center;
+    // border-right: 1px #ccc solid;
+    .xm-editor__svg {
+      cursor: pointer;
+      border-radius: 6px;
+      &:hover {
+        background: #eee;
+      }
+    }
     &.active {
-      background: lightblue;
+      // background: lightblue;
     }
   }
 }

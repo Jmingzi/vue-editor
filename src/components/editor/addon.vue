@@ -23,9 +23,7 @@
             :key="i"
             class="xm-editor__addon-block-menu"
             :class="{
-              'xm-editor__addon-block-menu--active': !isPlaceholder &&
-                hoverNode &&
-                hoverNode.attributes[item.field] === item[item.field]
+              'xm-editor__addon-block-menu--active': false
             }"
             @click="item.action(hoverNode), showPopup = false"
           >
@@ -151,7 +149,7 @@ export default {
        background: #eee;
     }
     &--active {
-      background: lightblue;
+      // background: lightblue;
     }
   }
   &-title {
