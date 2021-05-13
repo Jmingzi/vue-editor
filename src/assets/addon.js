@@ -2,10 +2,14 @@
  * 菜单及交互
  */
 
-import VueCompositionAPI, { onMounted, reactive, toRefs, watchEffect, computed } from '@vue/composition-api'
+import VueCompositionAPI, { onMounted, reactive, toRefs, watchEffect, computed, nextTick } from '@vue/composition-api'
 import Vue from 'vue'
 import useNodes from './node'
 import useMouse from './mouse'
+import { isPlaceholder } from './node-placeholder'
+import { getDefaultParagraph } from './node-paragraph'
+import { setCursorPosition, state as cursorState } from './cursor'
+import { getEditorEl } from './utils'
 Vue.use(VueCompositionAPI)
 
 const state = reactive({
@@ -70,16 +74,30 @@ watchEffect(() => {
   }
 })
 
+async function commonAction (node, callback) {
+  // todo 选区操作，要针对当前 piece 单独设置
+  if (isPlaceholder(node.type)) {
+    updateNode(getDefaultParagraph(), node.id)
+  }
+  callback()
+  await nextTick()
+  const editorEl = getEditorEl()
+  editorEl.focus()
+  setCursorPosition(cursorState.startOffset, cursorState.piece)
+}
+
 export const menus = [
   {
     label: 'H1',
     icon: 'h1',
     action: (node) => {
-      if (node.attributes.tag === 'h1') {
-        node.attributes.tag = 'p'
-      } else {
-        node.attributes.tag = 'h1'
-      }
+      commonAction(node, () => {
+        if (node.attributes.tag === 'h1') {
+          node.attributes.tag = 'p'
+        } else {
+          node.attributes.tag = 'h1'
+        }
+      })
     },
     tag: 'h1',
     field: 'tag'
@@ -88,11 +106,13 @@ export const menus = [
     label: 'H2',
     icon: 'h2',
     action: (node) => {
-      if (node.attributes.tag === 'h2') {
-        node.attributes.tag = 'p'
-      } else {
-        node.attributes.tag = 'h2'
-      }
+      commonAction(node, () => {
+        if (node.attributes.tag === 'h2') {
+          node.attributes.tag = 'p'
+        } else {
+          node.attributes.tag = 'h2'
+        }
+      })
     },
     tag: 'h2',
     field: 'tag'
@@ -101,11 +121,13 @@ export const menus = [
     label: 'H3',
     icon: 'h3',
     action: (node) => {
-      if (node.attributes.tag === 'h3') {
-        node.attributes.tag = 'p'
-      } else {
-        node.attributes.tag = 'h3'
-      }
+      commonAction(node, () => {
+        if (node.attributes.tag === 'h3') {
+          node.attributes.tag = 'p'
+        } else {
+          node.attributes.tag = 'h3'
+        }
+      })
     },
     tag: 'h3',
     field: 'tag'

@@ -6,6 +6,7 @@
     }"
     :class="{
       h1: data.attributes.tag === 'h1',
+      h2: data.attributes.tag === 'h2',
       h3: data.attributes.tag === 'h3',
       editing: data.editing
     }"
@@ -47,6 +48,10 @@ export default {
   //overflow: hidden;
   &.h1 {
     font-size: 36px;
+    font-weight: 500;
+  }
+  &.h2 {
+    font-size: 32px;
     font-weight: 500;
   }
   &.h3 {

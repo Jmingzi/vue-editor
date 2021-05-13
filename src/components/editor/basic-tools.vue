@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { ref, watchEffect, reactive, nextTick, onMounted } from '@vue/composition-api'
+import { ref, watchEffect, reactive, nextTick } from '@vue/composition-api'
 import useRange from '@/assets/range'
 import useNodes from '@/assets/node'
 import CSvg from '../svg'
@@ -226,8 +226,10 @@ export default {
       }
     })
 
-    onMounted(() => {
-      state.rect = ctx.refs.self.getBoundingClientRect()
+    watchEffect(() => {
+      if (show.value) {
+        state.rect = ctx.refs.self.getBoundingClientRect()
+      }
     })
 
     return {
